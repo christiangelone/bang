@@ -1,0 +1,8 @@
+GO ?= go
+GOBUILD ?= $(GO) build
+GOINSTALL ?= $(GO) install
+GOGET ?= $(GO) get
+GOMOD ?= $(GO) mod
+GORUN ?= $(GO) run
+GOTEST ?= $(GO) test
+GOTOOL ?= $(GO) tool
