@@ -9,7 +9,12 @@ import (
 	"github.com/christiangelone/bang/lib/file/perm"
 )
 
-const bangFolderName = ".bang"
+const (
+	BangFolderName = ".bang"
+	TmpFolderName  = "tmp"
+	BinFolderName  = "bin"
+	LinkFolderName = "@"
+)
 
 func BangFolderPath() (string, error) {
 	dirname, errDir := os.UserHomeDir()
@@ -17,7 +22,7 @@ func BangFolderPath() (string, error) {
 		return "", errDir
 	}
 
-	bangPath := filepath.Join(dirname, bangFolderName)
+	bangPath := filepath.Join(dirname, BangFolderName)
 	if _, err := os.Stat(bangPath); os.IsNotExist(err) {
 		bangDirErr := os.Mkdir(bangPath, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_OTH_X)
 		if bangDirErr != nil {

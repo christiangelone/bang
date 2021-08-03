@@ -160,7 +160,15 @@ func (g *Github) getDownloadFromRepo(ctx context.Context, repo *github.Repositor
 
 	url := strings.Replace(repo.GetCloneURL(), "https://", "", 1)
 	url = strings.Replace(url, ".git", "", 1)
-	swu := Download{RepoUrl: url, BinaryName: name, Source: g}
+	swu := Download{
+		RepoUrl: url,
+		Binary: Binary{
+			Name:    name,
+			Version: release.GetTagName(),
+		},
+		Source: g,
+	}
+
 	if len(release.Assets) == 0 {
 		swu.CandidateUrls = append(swu.CandidateUrls, release.GetTarballURL())
 	} else {
@@ -219,10 +227,10 @@ func (g *Github) Download(ctx context.Context, url string, progress *progress.Pr
 	return fileName, nil
 }
 
-func (g *Github) Install(fileName, binaryName string, progress *progress.Progress) (string, error) {
-	progress.Start(g.texts.InstallText(binaryName))
+func (g *Github) Install(fileName string, binary Binary, progress *progress.Progress) (string, error) {
+	progress.Start(g.texts.InstallText(binary.Name))
 
-	_, pathErr := g.BaseInstaller.Install(fileName, binaryName, progress)
+	_, pathErr := g.BaseInstaller.Install(fileName, binary, progress)
 	if pathErr != nil {
 		progress.StopFailWith("Error while installing => " + pathErr.Error())
 		return "", pathErr

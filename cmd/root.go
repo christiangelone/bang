@@ -5,6 +5,7 @@ import (
 
 	"github.com/christiangelone/bang/cmd/completion"
 	"github.com/christiangelone/bang/cmd/install"
+	"github.com/christiangelone/bang/cmd/use"
 	. "github.com/christiangelone/bang/lib/sugar"
 	"github.com/christiangelone/bang/source"
 	"github.com/spf13/cobra"
@@ -14,7 +15,7 @@ func RootCmd(version string) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Version: If(version != "")(version).Else("N/A").(string),
 		Use:     "bang",
-		Short:   "Bang a binary manager that really shoots",
+		Short:   "Bang is a binary manager that really shoots",
 		Args:    cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -30,6 +31,7 @@ func RootCmd(version string) *cobra.Command {
 				source.GithubSourceType: source.NewGithub(source.GithubOptions{}),
 			},
 		}),
+		use.Cmd(),
 	)
 }
 

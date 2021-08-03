@@ -15,12 +15,6 @@ import (
 	"github.com/fatih/color"
 )
 
-const (
-	tmpFolderName  = "tmp"
-	binFolderName  = "bin"
-	linkFolderName = "@"
-)
-
 type Type string
 
 type Downloadable interface {
@@ -28,7 +22,7 @@ type Downloadable interface {
 }
 
 type Installable interface {
-	Install(fileName, binaryName string, progress *progress.Progress) (string, error)
+	Install(fileName string, binary Binary, progress *progress.Progress) (string, error)
 }
 
 type Source interface {
@@ -47,7 +41,7 @@ func (b *BaseDownloader) Download(_ context.Context, _ string, _ *progress.Progr
 		return "", err
 	}
 
-	binPath := filepath.Join(bangPath, binFolderName)
+	binPath := filepath.Join(bangPath, system.BinFolderName)
 	if _, err := os.Stat(binPath); os.IsNotExist(err) {
 		binDirErr := os.Mkdir(binPath, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_OTH_X)
 		if binDirErr != nil {
@@ -55,7 +49,7 @@ func (b *BaseDownloader) Download(_ context.Context, _ string, _ *progress.Progr
 		}
 	}
 
-	linkPath := filepath.Join(binPath, linkFolderName)
+	linkPath := filepath.Join(binPath, system.LinkFolderName)
 	if _, err := os.Stat(linkPath); os.IsNotExist(err) {
 		linkDirErr := os.Mkdir(linkPath, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_OTH_X)
 		if linkDirErr != nil {
@@ -63,7 +57,7 @@ func (b *BaseDownloader) Download(_ context.Context, _ string, _ *progress.Progr
 		}
 	}
 
-	tmpPath := filepath.Join(bangPath, tmpFolderName)
+	tmpPath := filepath.Join(bangPath, system.TmpFolderName)
 	if _, err := os.Stat(tmpPath); os.IsNotExist(err) {
 		tmpDirErr := os.Mkdir(tmpPath, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_OTH_X)
 		if tmpDirErr != nil {
@@ -76,21 +70,29 @@ func (b *BaseDownloader) Download(_ context.Context, _ string, _ *progress.Progr
 
 type BaseInstaller struct{}
 
-func (b *BaseInstaller) Install(fileName, binaryName string, progress *progress.Progress) (string, error) {
+func (b *BaseInstaller) Install(fileName string, binary Binary, progress *progress.Progress) (string, error) {
 	bangPath, err := system.BangFolderPath()
 	if err != nil {
 		return "", err
 	}
 
-	tmpPath := filepath.Join(bangPath, tmpFolderName)
-	binPath := filepath.Join(bangPath, binFolderName)
-	linkPath := filepath.Join(binPath, linkFolderName, binaryName)
+	tmpPath := filepath.Join(bangPath, system.TmpFolderName)
+	binPath := filepath.Join(bangPath, system.BinFolderName)
+	linkPath := filepath.Join(binPath, system.LinkFolderName, binary.Name)
 
-	targetPath := filepath.Join(binPath, binaryName)
-	if _, err := os.Stat(targetPath); os.IsNotExist(err) {
-		targetDirErr := os.Mkdir(targetPath, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_OTH_X)
+	binTargetPath := filepath.Join(binPath, binary.Name)
+	if _, err := os.Stat(binTargetPath); os.IsNotExist(err) {
+		targetDirErr := os.Mkdir(binTargetPath, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_OTH_X)
 		if targetDirErr != nil {
 			return "", targetDirErr
+		}
+	}
+
+	versionPath := filepath.Join(binTargetPath, binary.Version)
+	if _, err := os.Stat(versionPath); os.IsNotExist(err) {
+		versionDirErr := os.Mkdir(versionPath, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_OTH_X)
+		if versionDirErr != nil {
+			return "", versionDirErr
 		}
 	}
 
@@ -99,7 +101,7 @@ func (b *BaseInstaller) Install(fileName, binaryName string, progress *progress.
 		return "", err
 	}
 
-	filePath := filepath.Join(targetPath, binaryName)
+	filePath := filepath.Join(versionPath, binary.Name)
 	writeErr := ioutil.WriteFile(filePath, inputFile, perm.OS_USER_RWX|perm.OS_GROUP_X|perm.OS_ALL_X)
 	if writeErr != nil {
 		return "", writeErr
@@ -116,7 +118,7 @@ func (b *BaseInstaller) Install(fileName, binaryName string, progress *progress.
 		return "", linkErr
 	}
 
-	return filepath.Join(binPath, binaryName), nil
+	return filepath.Join(binPath, binary.Name, binary.Version), nil
 }
 
 type texts struct{}
@@ -129,10 +131,14 @@ func (t texts) InstallText(text string) string {
 	return print.Sprint(color.NoColor, "Installing", color.FgYellow, text)
 }
 
+type Binary struct {
+	Name    string
+	Version string
+}
 type Download struct {
+	Binary        Binary
 	RepoUrl       string
 	CandidateUrls []string
-	BinaryName    string
 	Source        Source
 }
 
@@ -177,7 +183,7 @@ func (swu Download) scoreUrl(url string) scoreUrl {
 		score -= 0.5
 	}
 
-	if strings.Contains(toLowerUrl, swu.BinaryName) {
+	if strings.Contains(toLowerUrl, swu.Binary.Name) {
 		score++
 	}
 

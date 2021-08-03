@@ -124,7 +124,7 @@ func (i *Install) Run(ctx context.Context, installStr string) error {
 	}
 
 	installProgress := progress.NewProgress()
-	_, installErr := download.Source.Install(fileName, download.BinaryName, installProgress)
+	_, installErr := download.Source.Install(fileName, download.Binary, installProgress)
 	if installErr != nil {
 		return installErr
 	}
