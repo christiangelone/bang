@@ -1,3 +1,1 @@
-<div style="text-align:center;" >
-    <img src="logo.png" width="512px"/>
-</div>
+![](logo.png =512x253)
