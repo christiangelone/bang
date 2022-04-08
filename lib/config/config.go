@@ -1,10 +1,10 @@
 package config
 
 import (
+	"github.com/christiangelone/bang/lib/system/resource/file"
 	"os"
 	"path/filepath"
 
-	"github.com/christiangelone/bang/lib/file"
 	"github.com/christiangelone/bang/lib/system"
 	"gopkg.in/yaml.v2"
 )

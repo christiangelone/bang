@@ -11,6 +11,8 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/schollz/progressbar/v3 v3.8.1
+	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d
+	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/cobra v1.1.3
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45

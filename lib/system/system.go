@@ -1,12 +1,11 @@
 package system
 
 import (
+	"github.com/christiangelone/bang/lib/system/resource/perm"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
-
-	"github.com/christiangelone/bang/lib/file/perm"
 )
 
 const (

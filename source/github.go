@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/christiangelone/bang/lib/system/resource/file"
 	"io"
 	"mime"
 	"net/http"
@@ -16,7 +17,6 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/christiangelone/bang/lib/config"
-	"github.com/christiangelone/bang/lib/file"
 	. "github.com/christiangelone/bang/lib/sugar"
 	"github.com/christiangelone/bang/lib/ux/progress"
 )

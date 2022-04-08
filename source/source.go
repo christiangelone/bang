@@ -3,12 +3,12 @@ package source
 import (
 	"context"
 	"errors"
+	"github.com/christiangelone/bang/lib/system/resource/perm"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/christiangelone/bang/lib/file/perm"
 	"github.com/christiangelone/bang/lib/system"
 	"github.com/christiangelone/bang/lib/ux/print"
 	"github.com/christiangelone/bang/lib/ux/progress"
